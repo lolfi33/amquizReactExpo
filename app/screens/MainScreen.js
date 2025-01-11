@@ -34,13 +34,12 @@ const MainScreen = ({ pseudo, onLogout, onStartQuiz, uid }) => {
   const handleStartQuiz = async (quizName) => {
     setModalVisible(false);
 
-    // Incrémenter nbPartieJoues dans Firestore
     try {
       const userRef = doc(firestore, 'Users', uid);
       await updateDoc(userRef, {
         nbPartieJoues: nbPartieJoues + 1,
       });
-      setNbPartieJoues((prev) => prev + 1); // Mettre à jour localement
+      setNbPartieJoues((prev) => prev + 1);
     } catch (error) {
       console.error('Erreur lors de la mise à jour de nbPartieJoues :', error);
     }
@@ -52,7 +51,7 @@ const MainScreen = ({ pseudo, onLogout, onStartQuiz, uid }) => {
     <View style={styles.container}>
       <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
         <Image
-          source={require('./assets/img/logout.png')} // Assurez-vous que le chemin est correct
+          source={require('./assets/img/logout.png')}
           style={styles.logo}
         />
       </TouchableOpacity>

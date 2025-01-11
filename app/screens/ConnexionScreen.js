@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import { app } from '../firebaseConfig'; // Assurez-vous que firebaseConfig est correctement configuré
+import { app } from '../firebaseConfig'; 
 
 const ConnexionScreen = ({ onSignUpClick, onNavigateToMain }) => {
   const [email, setEmail] = useState('');
@@ -29,7 +29,7 @@ const ConnexionScreen = ({ onSignUpClick, onNavigateToMain }) => {
 
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        onNavigateToMain(userData.pseudo, uid); // Transmettez également l'UID ici
+        onNavigateToMain(userData.pseudo, uid);
       } else {
         Alert.alert('Erreur', 'Utilisateur introuvable.');
       }      

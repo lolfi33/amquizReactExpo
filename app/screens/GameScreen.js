@@ -25,7 +25,7 @@ const QuizPage = ({ quizName, onExit }) => {
     };
 
     loadQuestions();
-    return () => unloadSounds(); // Décharger les sons lorsque le composant est démonté
+    return () => unloadSounds(); 
   }, [quizName]);
 
   useEffect(() => {
@@ -48,10 +48,10 @@ const QuizPage = ({ quizName, onExit }) => {
     if (selectedAnswer === currentQuestion.reponse) {
       setScore((prev) => prev + 1);
       if (correctSound) {
-        await correctSound.replayAsync(); // Jouer le son de la bonne réponse
+        await correctSound.replayAsync(); 
       }
     } else {
-      Vibration.vibrate(500); // Vibrer pendant 500ms pour une mauvaise réponse
+      Vibration.vibrate(500);
     }
 
     if (currentQuestionIndex + 1 < questions.length) {

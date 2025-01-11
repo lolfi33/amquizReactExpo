@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
-import { app } from '../firebaseConfig'; // Assurez-vous que votre configuration Firebase est correcte
+import { app } from '../firebaseConfig'; 
 
 const SinscrireScreen = ({ onNavigateToMain, onNavigateToConnexion }) => {
   const [email, setEmail] = useState('');
@@ -33,11 +33,11 @@ const SinscrireScreen = ({ onNavigateToMain, onNavigateToConnexion }) => {
 
     setLoading(true);
     try {
-      // Créer un utilisateur avec Firebase Auth
+      // Créer user dans FireAuth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
 
-      // Ajouter les informations utilisateur dans Firestore
+      // Créer user dans FireBase
       await setDoc(doc(firestore, 'Users', uid), {
         pseudo,
         nbPartieJoues: 0,
@@ -55,6 +55,7 @@ const SinscrireScreen = ({ onNavigateToMain, onNavigateToConnexion }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Créer votre compte</Text>
 
+      {/* Mail */}
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -65,6 +66,7 @@ const SinscrireScreen = ({ onNavigateToMain, onNavigateToConnexion }) => {
         autoCapitalize="none"
       />
 
+      {/* Pseudo */}
       <TextInput
         style={styles.input}
         placeholder="Pseudo"
@@ -73,6 +75,7 @@ const SinscrireScreen = ({ onNavigateToMain, onNavigateToConnexion }) => {
         onChangeText={setPseudo}
       />
 
+      {/* Mdp */}
       <TextInput
         style={styles.input}
         placeholder="Mot de passe"
