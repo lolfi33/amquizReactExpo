@@ -24,14 +24,15 @@ const ConnexionScreen = ({ onSignUpClick, onNavigateToMain }) => {
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const userDoc = await getDoc(doc(firestore, 'Users', userCredential.user.uid));
+      const uid = userCredential.user.uid;
+      const userDoc = await getDoc(doc(firestore, 'Users',uid));
 
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        onNavigateToMain(userData.pseudo);
+        onNavigateToMain(userData.pseudo, uid); // Transmettez également l'UID ici
       } else {
         Alert.alert('Erreur', 'Utilisateur introuvable.');
-      }
+      }      
     } catch (error) {
       Alert.alert('Erreur', 'Mot de passe incorrect ou utilisateur inexistant.');
     } finally {

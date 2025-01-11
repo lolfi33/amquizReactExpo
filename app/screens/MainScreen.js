@@ -1,15 +1,63 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from 'react-native';
+import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
 
-const MainScreen = ({ pseudo, onLogout, onStartQuiz }) => {
+const firestore = getFirestore();
+
+const MainScreen = ({ pseudo, onLogout, onStartQuiz, uid }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [nbPartieJoues, setNbPartieJoues] = useState(0);
+
+  useEffect(() => {
+    const fetchNbPartieJoues = async () => {
+      if (!uid) {
+        console.error('UID non défini');
+        return;
+      }
+  
+      try {
+        const userDoc = await getDoc(doc(firestore, 'Users', uid));
+        if (userDoc.exists()) {
+          setNbPartieJoues(userDoc.data().nbPartieJoues || 0);
+        } else {
+          console.error(`Le document pour l'utilisateur avec UID ${uid} n'existe pas.`);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération du nombre de parties jouées :', error);
+      }
+    };
+  
+    fetchNbPartieJoues();
+  }, [uid]);
+  
+
+  const handleStartQuiz = async (quizName) => {
+    setModalVisible(false);
+
+    // Incrémenter nbPartieJoues dans Firestore
+    try {
+      const userRef = doc(firestore, 'Users', uid);
+      await updateDoc(userRef, {
+        nbPartieJoues: nbPartieJoues + 1,
+      });
+      setNbPartieJoues((prev) => prev + 1); // Mettre à jour localement
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de nbPartieJoues :', error);
+    }
+
+    onStartQuiz(quizName);
+  };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
-        <Text style={styles.logoutText}>Déconnexion</Text>
+        <Image
+          source={require('./assets/img/logout.png')} // Assurez-vous que le chemin est correct
+          style={styles.logo}
+        />
       </TouchableOpacity>
       <Text style={styles.welcomeText}>Bienvenue {pseudo}</Text>
+      <Text style={styles.nbPartiesText}>Nombre de parties jouées : {nbPartieJoues}</Text>
       <TouchableOpacity style={styles.mainButton} onPress={() => setModalVisible(true)}>
         <Text style={styles.mainButtonText}>Choisir un quiz</Text>
       </TouchableOpacity>
@@ -25,19 +73,13 @@ const MainScreen = ({ pseudo, onLogout, onStartQuiz }) => {
               <Text style={styles.modalTitle}>Choisissez un thème</Text>
               <TouchableOpacity
                 style={styles.modalButton}
-                onPress={() => {
-                  setModalVisible(false);
-                  onStartQuiz('onepiece'); // Appel de la fonction pour démarrer le quiz
-                }}
+                onPress={() => handleStartQuiz('onepiece')}
               >
                 <Text style={styles.modalButtonText}>One Piece</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalButton}
-                onPress={() => {
-                  setModalVisible(false);
-                  onStartQuiz('naruto');
-                }}
+                onPress={() => handleStartQuiz('naruto')}
               >
                 <Text style={styles.modalButtonText}>Naruto</Text>
               </TouchableOpacity>
@@ -70,14 +112,20 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
-  logoutText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  logo: {
+    width: 20,
+    height: 20, 
+    resizeMode: 'contain', 
   },
   welcomeText: {
     color: '#fff',
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  nbPartiesText: {
+    color: '#fff',
+    fontSize: 18,
     marginBottom: 30,
   },
   mainButton: {

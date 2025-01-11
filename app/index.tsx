@@ -6,9 +6,12 @@ import QuizPage from './screens/GameScreen';
 import MainScreen from './screens/MainScreen';
 
 const App = () => {
-  const [currentScreen, setCurrentScreen] = useState('Connexion'); // Écran initial
+  // Écran initial
+  const [currentScreen, setCurrentScreen] = useState('Connexion'); 
   const [pseudo, setPseudo] = useState<string>('');
-  const [quizName, setQuizName] = useState(''); // Stocker le nom du quiz sélectionné
+  const [quizName, setQuizName] = useState('');
+  const [userUID, setUserUID] = useState<string>('');
+
 
   const navigateToScreen = (screen: string, data: { quizName?: string } = {}) => {
     if (screen === 'QuizPage') {
@@ -24,8 +27,9 @@ const App = () => {
         return (
           <ConnexionScreen
             onSignUpClick={() => navigateToScreen('Sinscrire')}
-            onNavigateToMain={(newPseudo: string) => {
+            onNavigateToMain={(newPseudo: string, uid: string) => {
               setPseudo(newPseudo);
+              setUserUID(uid);
               navigateToScreen('MainScreen');
             }}
           />
@@ -33,18 +37,22 @@ const App = () => {
       case 'Sinscrire':
         return (
           <SinscrireScreen
-            onNavigateToMain={(newPseudo: string) => {
-              setPseudo(newPseudo);
-              navigateToScreen('MainScreen');
-            }}
+          onNavigateToMain={(newPseudo: string, uid: string) => {
+            setPseudo(newPseudo);
+            setUserUID(uid);
+            navigateToScreen('MainScreen');
+          }}
             onNavigateToConnexion={() => navigateToScreen('Connexion')}/>);
-      case 'MainScreen':
-        return <MainScreen
-         pseudo={pseudo}
-         onLogout={() => navigateToScreen('Connexion')}
-          onStartQuiz={(quizName: any) => navigateToScreen('QuizPage', { quizName })
-         }
-      />
+            case 'MainScreen':
+              console.log('UID:', userUID);
+              return (
+                <MainScreen
+                  pseudo={pseudo}
+                  onLogout={() => navigateToScreen('Connexion')}
+                  onStartQuiz={(quizName: any) => navigateToScreen('QuizPage', { quizName })}
+                  uid={userUID} 
+                />
+              );
       case 'QuizPage':
         return <QuizPage quizName={quizName} onExit={() => navigateToScreen('MainScreen')} />;
       default:

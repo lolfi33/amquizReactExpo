@@ -35,16 +35,16 @@ const SinscrireScreen = ({ onNavigateToMain, onNavigateToConnexion }) => {
     try {
       // Créer un utilisateur avec Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
 
       // Ajouter les informations utilisateur dans Firestore
-      await setDoc(doc(firestore, 'Users', userCredential.user.uid), {
+      await setDoc(doc(firestore, 'Users', uid), {
         pseudo,
+        nbPartieJoues: 0,
       });
-
       setLoading(false);
-
-      // Rediriger vers l'écran principal avec le pseudo
-      onNavigateToMain(pseudo);
+      
+      onNavigateToMain(pseudo, uid);
     } catch (error) {
       setLoading(false);
       Alert.alert('Erreur', 'Email déjà utilisé ou incorrect.');
